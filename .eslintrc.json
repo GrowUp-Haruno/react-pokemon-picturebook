@@ -28,7 +28,9 @@
             {
                 "ignoreIIFE": true
             }
-        ]
+        ],
+        // typeを許容
+        "@typescript-eslint/consistent-type-definitions": "off"
     },
     "settings": {
         "react": {
