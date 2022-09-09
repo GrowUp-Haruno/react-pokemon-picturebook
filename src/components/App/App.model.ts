@@ -9,7 +9,3 @@ export type PokeDataDetailType = AxiosResponse<{
   abilities: Array<{ ability: { name: string } }>;
 }>;
 
-export type PokeListUriType = {
-  next: string | null;
-  prev: string | null;
-};
