@@ -1,4 +1,4 @@
-import { MouseEventHandler, useState } from 'react';
+import { MouseEventHandler, useState, useEffect } from 'react';
 import { initLimit, initPosition } from '../../setting';
 
 type usePagenationTypes = (
@@ -21,6 +21,23 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     limit: initLimit,
     position: initPosition,
   });
+
+  const [pagenationSetting, setPagenationSetting] = useState<{
+    pageTotal: number;
+    pagePosition: number;
+  }>({
+    pageTotal: 0,
+    pagePosition: 1,
+  });
+  useEffect(() => {
+    console.log('ue call')
+    setPagenationSetting(({ pagePosition }) => {
+      return {
+        pageTotal: Math.floor(pokeCount / uriSetting.limit),
+        pagePosition,
+      };
+    });
+  }, [pokeCount, uriSetting.limit]);
 
   const handlePrevPage: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
@@ -57,5 +74,5 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
       });
     }
   };
-  return { uriSetting,handlePrevPage, handleNextPage };
+  return { uriSetting, handlePrevPage, handleNextPage };
 };

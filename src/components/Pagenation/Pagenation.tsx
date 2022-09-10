@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { initPagenationquantity } from '../../setting';
 import './pagenation.css';
 import { usePagenation } from './Pagenation.use';
 
@@ -23,6 +24,19 @@ export const Pagenation: FC<{
           ) : (
             <></>
           )}
+          <>
+            {[
+              ...Array(
+                Math.floor(pokeCount / uriSetting.limit) >=
+                  initPagenationquantity
+                  ? initPagenationquantity
+                  : Math.floor(pokeCount / uriSetting.limit)
+              ),
+            ].map((_, index) => (
+              <button key={index}>{index + 1}</button>
+            ))}
+          </>
+
           {uriSetting.position + uriSetting.limit <= pokeCount ? (
             <button onClick={handleNextPage}>Next</button>
           ) : (
