@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { initPagenationquantity } from '../../setting';
+// import { initPagenationquantity } from '../../setting';
 import './pagenation.css';
 import { usePagenation } from './Pagenation.use';
 
@@ -8,10 +8,14 @@ export const Pagenation: FC<{
   pokeCount: number;
   isLoading: boolean;
 }> = ({ pokemonGet, pokeCount, isLoading }) => {
-  const { uriSetting, handleNextPage, handlePrevPage } = usePagenation(
-    pokemonGet,
-    pokeCount
-  );
+  const {
+    uriSetting,
+    pagenationSetting,
+    handleNextPage,
+    handlePrevPage,
+    handleJumpPage,
+    createPagenation,
+  } = usePagenation(pokemonGet, pokeCount);
 
   return (
     <div className="pagenation">
@@ -25,15 +29,21 @@ export const Pagenation: FC<{
             <></>
           )}
           <>
-            {[
-              ...Array(
-                Math.floor(pokeCount / uriSetting.limit) >=
-                  initPagenationquantity
-                  ? initPagenationquantity
-                  : Math.floor(pokeCount / uriSetting.limit)
-              ),
-            ].map((_, index) => (
-              <button key={index}>{index + 1}</button>
+            {createPagenation().map((number) => (
+              <button
+                key={number}
+                style={{
+                  backgroundColor:
+                    number === pagenationSetting.pagePosition ? 'red' : 'white',
+                  border: '1px solid gray',
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleJumpPage(number);
+                }}
+              >
+                {number}
+              </button>
             ))}
           </>
 
