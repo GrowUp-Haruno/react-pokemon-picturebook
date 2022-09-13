@@ -10,10 +10,9 @@ export const Pagenation: FC<{
 }> = ({ pokemonGet, pokeCount, isLoading }) => {
   const {
     uriSetting,
-    pagenationSetting,
+    // pagenationSetting,
     handleNextPage,
     handlePrevPage,
-    handleJumpPage,
     createPagenation,
   } = usePagenation(pokemonGet, pokeCount);
 
@@ -29,20 +28,9 @@ export const Pagenation: FC<{
             <></>
           )}
           <>
-            {createPagenation().map((number) => (
-              <button
-                key={number}
-                style={{
-                  backgroundColor:
-                    number === pagenationSetting.pagePosition ? 'red' : 'white',
-                  border: '1px solid gray',
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleJumpPage(number);
-                }}
-              >
-                {number}
+            {createPagenation().map(({ jumpNumber, style, handleJumpPage }) => (
+              <button key={jumpNumber} style={style} onClick={handleJumpPage}>
+                {jumpNumber}
               </button>
             ))}
           </>

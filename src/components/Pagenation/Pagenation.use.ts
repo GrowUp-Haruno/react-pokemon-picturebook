@@ -1,4 +1,4 @@
-import { MouseEventHandler, useState, useEffect, useCallback } from 'react';
+import { MouseEventHandler, useState, useEffect, CSSProperties } from 'react';
 import { initLimit, initPagenationquantity, initPosition } from '../../setting';
 
 type usePagenationTypes = (
@@ -15,8 +15,11 @@ type usePagenationTypes = (
   };
   handlePrevPage: MouseEventHandler<HTMLButtonElement>;
   handleNextPage: MouseEventHandler<HTMLButtonElement>;
-  handleJumpPage: (jumpNumber: number) => void;
-  createPagenation: () => number[];
+  createPagenation: () => Array<{
+    jumpNumber: number;
+    style: CSSProperties;
+    handleJumpPage: MouseEventHandler<HTMLButtonElement>;
+  }>;
 };
 
 export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
@@ -74,7 +77,7 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     e.preventDefault();
     if (uriSetting.position + uriSetting.limit <= pokeCount) {
       setUriSetting(({ limit, position }) => {
-        const newPosition = position + limit;
+        const newPosition: number = position + limit;
         pokemonGet(
           `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
         ).catch((error) => {
@@ -92,26 +95,11 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     }
   };
 
-  const handleJumpPage: (jumpNumber: number) => void = (jumpNumber) => {
-    setUriSetting(({ limit }) => {
-      const newPosition = limit * (jumpNumber - 1);
-      pokemonGet(
-        `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
-      ).catch((error) => {
-        console.log(error);
-      });
-      return {
-        limit,
-        position: newPosition,
-      };
-    });
-    setPagenationSetting(({ pageTotal }) => ({
-      pageTotal,
-      pagePosition: jumpNumber,
-    }));
-  };
-
-  const createPagenation: () => number[] = useCallback(() => {
+  const createPagenation: () => Array<{
+    jumpNumber: number;
+    style: CSSProperties;
+    handleJumpPage: MouseEventHandler<HTMLButtonElement>;
+  }> = () => {
     const { pagePosition, pageTotal } = pagenationSetting;
     const halfQuantity = Math.ceil(initPagenationquantity / 2);
 
@@ -126,15 +114,42 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     const adjPageTotal =
       initPagenationquantity < pageTotal ? initPagenationquantity : pageTotal;
 
-    return [...Array(adjPageTotal)].map((_, i) => i + offset);
-  }, [pagenationSetting]);
+    return [...Array(adjPageTotal)].map((_, i) => {
+      return {
+        jumpNumber: i + offset,
+        style: {
+          backgroundColor:
+            i + offset === pagenationSetting.pagePosition ? 'red' : 'white',
+          border: '1px solid gray',
+        },
+        handleJumpPage: (e) => {
+          e.preventDefault();
+          setUriSetting(({ limit }) => {
+            const newPosition = limit * (i + offset - 1);
+            pokemonGet(
+              `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
+            ).catch((error) => {
+              console.log(error);
+            });
+            return {
+              limit,
+              position: newPosition,
+            };
+          });
+          setPagenationSetting(({ pageTotal }) => ({
+            pageTotal,
+            pagePosition: i + offset,
+          }));
+        },
+      };
+    });
+  };
 
   return {
     uriSetting,
     pagenationSetting,
     handlePrevPage,
     handleNextPage,
-    handleJumpPage,
     createPagenation,
   };
 };
