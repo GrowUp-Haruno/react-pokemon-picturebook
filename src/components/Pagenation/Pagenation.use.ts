@@ -1,4 +1,4 @@
-import { MouseEventHandler, useState, useEffect, CSSProperties } from "react";
+import { MouseEventHandler, useState, useEffect, CSSProperties, ChangeEventHandler } from "react";
 import { initLimit, initPagenationquantity } from "../../setting";
 
 // 型定義
@@ -13,6 +13,7 @@ type usePagenationTypes = (
   };
   handlePrevPage: MouseEventHandler<HTMLButtonElement>;
   handleNextPage: MouseEventHandler<HTMLButtonElement>;
+  handleChangeSelect: ChangeEventHandler<HTMLSelectElement>;
   createPagenation: () => Array<{
     jumpNumber: number;
     style: CSSProperties;
@@ -97,6 +98,21 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     });
   };
 
+  const handleChangeSelect: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    e.preventDefault();
+    const newPosition = 1;
+    const uriOffset = 0;
+    const newUriLimit = Number(e.target.value);
+    pokemonGet(`https://pokeapi.co/api/v2/pokemon/?offset=${uriOffset}&limit=${newUriLimit}`).catch((error) => {
+      console.log(error);
+    });
+    setPagenationSetting(({ pageTotal }) => ({
+      pageTotal,
+      pagePosition: newPosition,
+      uriLimit: newUriLimit,
+    }));
+  };
+
   useEffect(() => {
     setPagenationSetting((prev) => {
       return {
@@ -110,6 +126,7 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
     pagenationSetting,
     handlePrevPage,
     handleNextPage,
+    handleChangeSelect,
     createPagenation,
   };
 };
