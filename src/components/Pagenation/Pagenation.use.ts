@@ -1,15 +1,13 @@
-import { MouseEventHandler, useState, useEffect, CSSProperties } from 'react';
-import { initLimit, initPagenationquantity, initPosition } from '../../setting';
+import { MouseEventHandler, useState, useEffect, CSSProperties } from "react";
+import { initLimit, initPagenationquantity } from "../../setting";
 
+// 型定義
 type usePagenationTypes = (
   pokemonGet: (pokemonListURI: string) => Promise<number | undefined | null>,
   pokeCount: number
 ) => {
-  uriSetting: {
-    limit: number;
-    position: number;
-  };
   pagenationSetting: {
+    uriLimit: number;
     pageTotal: number;
     pagePosition: number;
   };
@@ -23,76 +21,42 @@ type usePagenationTypes = (
 };
 
 export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
-  const [uriSetting, setUriSetting] = useState<{
-    limit: number;
-    position: number;
-  }>({
-    limit: initLimit,
-    position: initPosition,
-  });
-
   const [pagenationSetting, setPagenationSetting] = useState<{
+    uriLimit: number;
     pageTotal: number;
     pagePosition: number;
   }>({
+    uriLimit: initLimit,
     pageTotal: 0,
     pagePosition: 1,
   });
 
-  useEffect(() => {
-    setPagenationSetting(({ pagePosition }) => {
-      console.log('setPagenationSetting complete');
-
-      return {
-        pageTotal: Math.ceil(pokeCount / uriSetting.limit),
-        pagePosition,
-      };
-    });
-  }, [pokeCount, uriSetting.limit]);
-
   const handlePrevPage: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    if (uriSetting.position !== 0) {
-      setUriSetting(({ limit, position }) => {
-        const newPosition = position - limit < 0 ? 0 : position - limit;
-        pokemonGet(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
-        ).catch((error) => {
-          console.log(error);
-        });
-        return {
-          limit,
-          position: position - limit < 0 ? 0 : position - limit,
-        };
-      });
-
-      setPagenationSetting(({ pageTotal, pagePosition }) => ({
-        pageTotal,
-        pagePosition: pagePosition - 1,
-      }));
-    }
+    const { pagePosition, uriLimit } = pagenationSetting;
+    const newPosition = pagePosition - 1;
+    const uriOffset = (newPosition - 1) * uriLimit;
+    pokemonGet(`https://pokeapi.co/api/v2/pokemon/?offset=${uriOffset}&limit=${uriLimit}`).catch((error) => {
+      console.log(error);
+    });
+    setPagenationSetting((prev) => {
+      if (prev.pagePosition <= 1) return { ...prev };
+      return { ...prev, pagePosition: newPosition };
+    });
   };
 
   const handleNextPage: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
-    if (uriSetting.position + uriSetting.limit <= pokeCount) {
-      setUriSetting(({ limit, position }) => {
-        const newPosition: number = position + limit;
-        pokemonGet(
-          `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
-        ).catch((error) => {
-          console.log(error);
-        });
-        return {
-          limit,
-          position: newPosition,
-        };
-      });
-      setPagenationSetting(({ pageTotal, pagePosition }) => ({
-        pageTotal,
-        pagePosition: pagePosition + 1,
-      }));
-    }
+    const { pagePosition, uriLimit } = pagenationSetting;
+    const newPosition = pagePosition + 1;
+    const uriOffset = (newPosition - 1) * uriLimit;
+    pokemonGet(`https://pokeapi.co/api/v2/pokemon/?offset=${uriOffset}&limit=${uriLimit}`).catch((error) => {
+      console.log(error);
+    });
+    setPagenationSetting((prev) => {
+      if (prev.pagePosition >= prev.pageTotal) return { ...prev };
+      return { ...prev, pagePosition: newPosition };
+    });
   };
 
   const createPagenation: () => Array<{
@@ -102,51 +66,47 @@ export const usePagenation: usePagenationTypes = (pokemonGet, pokeCount) => {
   }> = () => {
     const { pagePosition, pageTotal } = pagenationSetting;
     const halfQuantity = Math.ceil(initPagenationquantity / 2);
-
     const offset: number =
       pagePosition <= halfQuantity
         ? 1
         : pagePosition > pageTotal - halfQuantity
         ? pageTotal - initPagenationquantity + 1
         : pagePosition - halfQuantity + 1;
-
     // pageTotalがinitPagenationquantityよりも少ない場合の対応
-    const adjPageTotal =
-      initPagenationquantity < pageTotal ? initPagenationquantity : pageTotal;
-
+    const adjPageTotal = initPagenationquantity < pageTotal ? initPagenationquantity : pageTotal;
     return [...Array(adjPageTotal)].map((_, i) => {
       return {
         jumpNumber: i + offset,
         style: {
-          backgroundColor:
-            i + offset === pagenationSetting.pagePosition ? 'red' : 'white',
-          border: '1px solid gray',
+          backgroundColor: i + offset === pagenationSetting.pagePosition ? "red" : "white",
+          border: "1px solid gray",
         },
         handleJumpPage: (e) => {
           e.preventDefault();
-          setUriSetting(({ limit }) => {
-            const newPosition = limit * (i + offset - 1);
-            pokemonGet(
-              `https://pokeapi.co/api/v2/pokemon/?offset=${newPosition}&limit=${limit}`
-            ).catch((error) => {
-              console.log(error);
-            });
-            return {
-              limit,
-              position: newPosition,
-            };
+          const { uriLimit } = pagenationSetting;
+          const newPosition = i + offset;
+          const uriOffset = (newPosition - 1) * uriLimit;
+          pokemonGet(`https://pokeapi.co/api/v2/pokemon/?offset=${uriOffset}&limit=${uriLimit}`).catch((error) => {
+            console.log(error);
           });
-          setPagenationSetting(({ pageTotal }) => ({
-            pageTotal,
-            pagePosition: i + offset,
-          }));
+          setPagenationSetting((prev) => {
+            return { ...prev, pagePosition: newPosition };
+          });
         },
       };
     });
   };
 
+  useEffect(() => {
+    setPagenationSetting((prev) => {
+      return {
+        ...prev,
+        pageTotal: Math.ceil(pokeCount / prev.uriLimit),
+      };
+    });
+  }, [pokeCount, pagenationSetting.uriLimit]);
+
   return {
-    uriSetting,
     pagenationSetting,
     handlePrevPage,
     handleNextPage,
