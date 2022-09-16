@@ -1,65 +1,81 @@
-import { FC } from 'react';
-import { PokeDataDetailType } from '../App/App.model';
+import {
+  Center,
+  Divider,
+  Heading,
+  HStack,
+  Image,
+  SimpleGrid,
+  Spinner,
+  TableContainer,
+  Table,
+  Tbody,
+  Tr,
+  Td,
+  Tag,
+} from "@chakra-ui/react";
+import { FC } from "react";
+import { PokeDataDetailType } from "../App/App.model";
 
-import { Card } from '../Card/Card';
-import './pokecards.css';
+import { Card } from "../Card/Card";
+import { pokecardsProps } from "./PokeCards.style";
 
 export const PokeCards: FC<{
   pokeDataDetails: Array<PromiseSettledResult<PokeDataDetailType>>;
   isLoading: boolean;
 }> = ({ pokeDataDetails, isLoading }) => {
+  console.log(pokeDataDetails);
   return (
     <>
       {isLoading ? (
-        <p>Loading</p>
+        <Center>
+          <Spinner size={["md", "lg", "xl"]} />
+        </Center>
       ) : (
-        <div className="pokecards">
+        <SimpleGrid {...pokecardsProps}>
           {pokeDataDetails.map((pokeDataDetail) =>
-            pokeDataDetail.status === 'fulfilled' ? (
+            pokeDataDetail.status === "fulfilled" ? (
               <Card key={pokeDataDetail.value.data.name}>
-                <div className="pokeImg">
-                  <img
-                    src={pokeDataDetail.value.data.sprites.front_default}
-                    alt={pokeDataDetail.value.data.name}
-                  />
-                </div>
-                <h3 className="pokeName">{pokeDataDetail.value.data.name}</h3>
-                <div className="pokeTypes">
-                  <p>タイプ</p>
-                  {pokeDataDetail.value.data.types.map((type) => (
-                    <div key={type.type.name}>
-                      <span className="typeName">{type.type.name}</span>
-                    </div>
+                {/* 画像 */}
+                <Image src={pokeDataDetail.value.data.sprites.front_default} alt={pokeDataDetail.value.data.name} />
+                {/* 名前 */}
+                <Heading as="h2" size="lg">
+                  {pokeDataDetail.value.data.name}
+                </Heading>
+                {/* 属性 */}
+                <HStack spacing={4}>
+                  {pokeDataDetail.value.data.types.map((type, i) => (
+                    <Tag key={type.type.name} size="md">
+                      {type.type.name}
+                    </Tag>
                   ))}
-                </div>
-                <div className="pokeInfo">
-                  <div className="pokeData">
-                    <p className="dataTitle">
-                      重さ: {pokeDataDetail.value.data.weight}
-                    </p>
-                  </div>
-                  <div className="pokeData">
-                    <p className="dataTitle">
-                      高さ: {pokeDataDetail.value.data.height}
-                    </p>
-                  </div>
-                  <div className="pokeData">
-                    {pokeDataDetail.value.data.abilities.map(
-                      (ability, index) => (
-                        <p
-                          className="dataTitle"
-                          key={`${pokeDataDetail.value.data.name}-${ability.ability.name}`}
-                        >{`アビリティ${index + 1}: ${ability.ability.name}`}</p>
-                      )
-                    )}
-                  </div>
-                </div>
+                </HStack>
+                <Divider />
+                <TableContainer w="100%">
+                  <Table variant="unstyled" size='sm'>
+                    <Tbody>
+                      <Tr>
+                        <Td>重さ</Td>
+                        <Td>{(pokeDataDetail.value.data.weight / 10).toFixed(1)}kg</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>高さ</Td>
+                        <Td>{(pokeDataDetail.value.data.height / 10).toFixed(1)}m</Td>
+                      </Tr>
+                      {pokeDataDetail.value.data.abilities.map((ability, index) => (
+                        <Tr key={index}>
+                          <Td>{index === 1 ? "隠れ" : ""}特性</Td>
+                          <Td>{ability.ability.name}</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               </Card>
             ) : (
               <></>
             )
           )}
-        </div>
+        </SimpleGrid>
       )}
     </>
   );
