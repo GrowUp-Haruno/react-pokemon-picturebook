@@ -1,9 +1,9 @@
-import { FC, ReactNode } from 'react';
-import './card.css';
+import { VStack } from "@chakra-ui/react";
+import { FC, ReactNode } from "react";
+import { cardProps } from "./Card.style";
 
 export const Card: FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  return <div className="card">{children}</div>;
+  return <VStack {...cardProps}>{children}</VStack>;
 };
-
