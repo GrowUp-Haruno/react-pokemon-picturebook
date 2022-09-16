@@ -1,6 +1,6 @@
+import { Button, FormControl, FormLabel, HStack, Select, VStack } from "@chakra-ui/react";
 import { FC } from "react";
 import { initLimit, initLimitquantity } from "../../setting";
-import "./pagenation.css";
 import { usePagenation } from "./Pagenation.use";
 
 export const Pagenation: FC<{
@@ -16,22 +16,31 @@ export const Pagenation: FC<{
     createPagenation,
   } = usePagenation(pokemonGet, pokeCount);
   return (
-    <div className="pagenation-container">
+    <>
       {isLoading ? (
         <></>
       ) : (
-        <>
-          <div className="pagenation">
-            {pagePosition <= 1 ? <></> : <button onClick={handlePrevPage}>Back</button>}
-            {createPagenation().map(({ jumpNumber, style, handleJumpPage }) => (
-              <button key={jumpNumber} style={style} onClick={handleJumpPage}>
-                {jumpNumber}
-              </button>
-            ))}
-            {pagePosition >= pageTotal ? <></> : <button onClick={handleNextPage}>Next</button>}
-          </div>
-          <div className="">
-            <select onChange={handleChangeSelect} defaultValue={uriLimit}>
+        <VStack py={8} spacing={4} w="sm">
+          <HStack>
+            {pagePosition <= 1 ? <></> : <Button onClick={handlePrevPage}>Back</Button>}
+            {createPagenation().map(
+              ({
+                jumpNumber,
+                props,
+              }) => (
+                <Button
+                  key={jumpNumber}
+                  {...props}
+                >
+                  {jumpNumber}
+                </Button>
+              )
+            )}
+            {pagePosition >= pageTotal ? <></> : <Button onClick={handleNextPage}>Next</Button>}
+          </HStack>
+          <FormControl>
+            <FormLabel>表示件数</FormLabel>
+            <Select onChange={handleChangeSelect} defaultValue={uriLimit}>
               {[...Array(initLimitquantity)].map((_, i) => {
                 const value = initLimit * (i + 1);
                 return (
@@ -40,10 +49,10 @@ export const Pagenation: FC<{
                   </option>
                 );
               })}
-            </select>
-          </div>
-        </>
+            </Select>
+          </FormControl>
+        </VStack>
       )}
-    </div>
+    </>
   );
 };

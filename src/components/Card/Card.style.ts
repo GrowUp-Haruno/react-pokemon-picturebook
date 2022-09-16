@@ -7,4 +7,7 @@ export const cardProps: StackProps = {
   borderColor: "orange.100",
   borderRadius: "lg",
   backgroundColor: "orange.50",
+  spacing: 2,
+  padding: 2,
+  w: "240px",
 };

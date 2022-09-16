@@ -50,21 +50,22 @@ export const PokeCards: FC<{
                   ))}
                 </HStack>
                 <Divider />
-                <TableContainer w="100%">
-                  <Table variant="unstyled" size='sm'>
+                {/* 詳細 */}
+                <TableContainer overflowX="hidden">
+                  <Table variant="simple" size="sm">
                     <Tbody>
                       <Tr>
                         <Td>重さ</Td>
-                        <Td>{(pokeDataDetail.value.data.weight / 10).toFixed(1)}kg</Td>
+                        <Td isNumeric>{(pokeDataDetail.value.data.weight / 10).toFixed(1)}kg</Td>
                       </Tr>
                       <Tr>
                         <Td>高さ</Td>
-                        <Td>{(pokeDataDetail.value.data.height / 10).toFixed(1)}m</Td>
+                        <Td isNumeric>{(pokeDataDetail.value.data.height / 10).toFixed(1)}m</Td>
                       </Tr>
                       {pokeDataDetail.value.data.abilities.map((ability, index) => (
                         <Tr key={index}>
                           <Td>{index === 1 ? "隠れ" : ""}特性</Td>
-                          <Td>{ability.ability.name}</Td>
+                          <Td isNumeric>{ability.ability.name}</Td>
                         </Tr>
                       ))}
                     </Tbody>
