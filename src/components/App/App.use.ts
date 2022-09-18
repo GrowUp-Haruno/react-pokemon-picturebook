@@ -1,7 +1,8 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { useEffect, useState } from 'react';
-import { initPokeListURI } from '../../setting';
-import { PokeDataDetailType } from './App.model';
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { setupCache } from "axios-cache-adapter";
+import { useEffect, useState } from "react";
+import { initPokeListURI } from "../../setting";
+import { PokeDataDetailType } from "./App.model";
 
 type useAppTypes = () => {
   isLoading: boolean;
@@ -12,15 +13,18 @@ type useAppTypes = () => {
 
 export const useApp: useAppTypes = () => {
   const [isLoading, setIsLoading] = useState(true);
-
-  const [pokeDataDetails, setPokeDataDetails] = useState<
-    Array<PromiseSettledResult<PokeDataDetailType>>
-  >([]);
-
+  const [pokeDataDetails, setPokeDataDetails] = useState<Array<PromiseSettledResult<PokeDataDetailType>>>([]);
   const [pokeCount, setPokeCount] = useState(0);
-  const pokemonGet: (
-    pokemonListURI: string
-  ) => Promise<number | undefined | null> = async (pokemonListURI) => {
+
+  const cache = setupCache({
+    maxAge: 15 * 60 * 1000,
+  });
+
+  const api = axios.create({
+    adapter: cache.adapter,
+  });
+
+  const pokemonGet: (pokemonListURI: string) => Promise<number | undefined | null> = async (pokemonListURI) => {
     try {
       setIsLoading(true);
 
@@ -28,17 +32,14 @@ export const useApp: useAppTypes = () => {
       const pokeList: AxiosResponse<{
         results: Array<{ url: string }> | undefined;
         count: number | undefined | null;
-      }> = await axios.get(pokemonListURI);
+      }> = await api.get(pokemonListURI);
 
       console.log(pokeList);
 
-      if (typeof pokeList.data.results === 'undefined')
-        throw new Error('データに異常が見つかりました(No.1)');
+      if (typeof pokeList.data.results === "undefined") throw new Error("データに異常が見つかりました(No.1)");
 
       setPokeDataDetails(
-        await Promise.allSettled(
-          pokeList.data.results.map(async (poke) => await axios.get(poke.url))
-        )
+        await Promise.allSettled(pokeList.data.results.map(async (poke) => await api.get(poke.url)))
       );
 
       setIsLoading(false);
@@ -46,7 +47,7 @@ export const useApp: useAppTypes = () => {
       return pokeList.data.count;
     } catch (error) {
       if (error instanceof AxiosError) console.log(error.message);
-      console.log('通信エラー');
+      console.log("通信エラー");
     }
   };
   useEffect(() => {
