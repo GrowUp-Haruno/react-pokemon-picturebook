@@ -1,7 +1,7 @@
 export type PokeDataDetailType = {
   name: string;
   sprites: { front_default: string };
-  types: Array<{ type: { name: string } }>;
+  types: Array<{ type: { name: string; url: string } }>;
   weight: number;
   height: number;
   abilities: Array<{ ability: { name: string } }>;
@@ -10,7 +10,9 @@ export type PokeDataDetailType = {
 
 export type PokeDataSpeciesType = {
   id: number;
-  names: Array<{ language: { name: string }; name: string }>;
+  names: Array<{ name: string }>;
 };
 
-export type PokeDataType = PokeDataDetailType & PokeDataSpeciesType;
+export type PokeDataType = PokeDataDetailType & {
+  id: number;
+};
