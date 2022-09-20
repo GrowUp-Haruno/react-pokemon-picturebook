@@ -2,18 +2,18 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { setupCache } from "axios-cache-adapter";
 import { useEffect, useState } from "react";
 import { initPokeListURI } from "../../setting";
-import { PokeDataDetailType } from "./App.model";
+import { PokeDataDetailType, PokeDataSpeciesType, PokeDataType } from "./App.model";
 
 type useAppTypes = () => {
   isLoading: boolean;
-  pokeDataDetails: Array<PromiseSettledResult<PokeDataDetailType>>;
+  pokeDatas: Array<PromiseSettledResult<PokeDataType>>;
   pokeCount: number;
   pokemonGet: (pokemonListURI: string) => Promise<number | undefined | null>;
 };
 
 export const useApp: useAppTypes = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [pokeDataDetails, setPokeDataDetails] = useState<Array<PromiseSettledResult<PokeDataDetailType>>>([]);
+  const [pokeDatas, setPokeDatas] = useState<Array<PromiseSettledResult<PokeDataType>>>([]);
   const [pokeCount, setPokeCount] = useState(0);
 
   const cache = setupCache({
@@ -34,13 +34,18 @@ export const useApp: useAppTypes = () => {
         count: number | undefined | null;
       }> = await api.get(pokemonListURI);
 
-      console.log(pokeList);
-
       if (typeof pokeList.data.results === "undefined") throw new Error("データに異常が見つかりました(No.1)");
 
-      setPokeDataDetails(
-        await Promise.allSettled(pokeList.data.results.map(async (poke) => await api.get(poke.url)))
+      const resultPokeData = await Promise.allSettled(
+        pokeList.data.results.map<Promise<PokeDataType>>(async (poke) => {
+          const { abilities, height, name, species, sprites, types, weight } = (
+            await api.get<PokeDataDetailType>(poke.url)
+          ).data;
+          const { id, names } = (await api.get<PokeDataSpeciesType>(species.url)).data;
+          return { abilities, height, name, species, sprites, types, weight, id, names };
+        })
       );
+      setPokeDatas(resultPokeData);
 
       setIsLoading(false);
 
@@ -61,7 +66,7 @@ export const useApp: useAppTypes = () => {
   }, []);
   return {
     isLoading,
-    pokeDataDetails,
+    pokeDatas,
     pokeCount,
     pokemonGet,
   };
