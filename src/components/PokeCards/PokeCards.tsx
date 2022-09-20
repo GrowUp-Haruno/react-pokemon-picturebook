@@ -12,18 +12,19 @@ import {
   Tr,
   Td,
   Tag,
+  Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { PokeDataDetailType } from "../App/App.model";
+import { PokeDataType } from "../App/App.model";
 
 import { Card } from "../Card/Card";
 import { pokecardsProps } from "./PokeCards.style";
 
 export const PokeCards: FC<{
-  pokeDataDetails: Array<PromiseSettledResult<PokeDataDetailType>>;
+  pokeDatas: Array<PromiseSettledResult<PokeDataType>>;
   isLoading: boolean;
-}> = ({ pokeDataDetails, isLoading }) => {
-  console.log(pokeDataDetails);
+}> = ({ pokeDatas, isLoading }) => {
+  // console.log(pokeDatas);
   return (
     <>
       {isLoading ? (
@@ -32,18 +33,20 @@ export const PokeCards: FC<{
         </Center>
       ) : (
         <SimpleGrid {...pokecardsProps}>
-          {pokeDataDetails.map((pokeDataDetail) =>
-            pokeDataDetail.status === "fulfilled" ? (
-              <Card key={pokeDataDetail.value.data.name}>
+          {pokeDatas.map((pokeData) =>
+            pokeData.status === "fulfilled" ? (
+              <Card key={pokeData.value.name}>
+                {/* 全国図鑑番号 */}
+                <Text alignItems='start'>No.{pokeData.value.id}</Text>
                 {/* 画像 */}
-                <Image src={pokeDataDetail.value.data.sprites.front_default} alt={pokeDataDetail.value.data.name} />
+                <Image src={pokeData.value.sprites.front_default} alt={pokeData.value.name} />
                 {/* 名前 */}
                 <Heading as="h2" size="lg">
-                  {pokeDataDetail.value.data.name}
+                  {pokeData.value.name}
                 </Heading>
                 {/* 属性 */}
                 <HStack spacing={4}>
-                  {pokeDataDetail.value.data.types.map((type, i) => (
+                  {pokeData.value.types.map((type, i) => (
                     <Tag key={type.type.name} size="md">
                       {type.type.name}
                     </Tag>
@@ -56,13 +59,13 @@ export const PokeCards: FC<{
                     <Tbody>
                       <Tr>
                         <Td>重さ</Td>
-                        <Td isNumeric>{(pokeDataDetail.value.data.weight / 10).toFixed(1)}kg</Td>
+                        <Td isNumeric>{(pokeData.value.weight / 10).toFixed(1)}kg</Td>
                       </Tr>
                       <Tr>
                         <Td>高さ</Td>
-                        <Td isNumeric>{(pokeDataDetail.value.data.height / 10).toFixed(1)}m</Td>
+                        <Td isNumeric>{(pokeData.value.height / 10).toFixed(1)}m</Td>
                       </Tr>
-                      {pokeDataDetail.value.data.abilities.map((ability, index) => (
+                      {pokeData.value.abilities.map((ability, index) => (
                         <Tr key={index}>
                           <Td>{index === 1 ? "隠れ" : ""}特性</Td>
                           <Td isNumeric>{ability.ability.name}</Td>
