@@ -2,21 +2,21 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { setupCache } from "axios-cache-adapter";
 import { useEffect, useState } from "react";
 import { initPokeAbilityURI, initPokeListURI, initPokeTypesURI } from "../../setting";
-import { PokeDataDetailType, PokeDataSpeciesType, PokeDataType } from "./App.model";
+import { PokeDetail, PokeSpecies, PokeData } from "./App.model";
 
 type useAppTypes = () => {
   isLoading: boolean;
-  pokeDatas: Array<PromiseSettledResult<PokeDataType>>;
+  pokeDatas: Array<PromiseSettledResult<PokeData>>;
   pokeCount: number;
   pokemonGet: (pokemonListURI: string) => Promise<number | undefined | null>;
 };
 
 export const useApp: useAppTypes = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [pokeDatas, setPokeDatas] = useState<Array<PromiseSettledResult<PokeDataType>>>([]);
+  const [pokeDatas, setPokeDatas] = useState<Array<PromiseSettledResult<PokeData>>>([]);
   const [pokeCount, setPokeCount] = useState(0);
-  const [pokeTypes, setpokeTypes] = useState<{ [name in string]: string }>({});
-  const [pokeAbilities, setpokeAbilities] = useState<{ [name in string]: string }>({});
+  const [pokeTypes, setPokeTypes] = useState<{ [name in string]: string }>({});
+  const [pokeAbilities, setPokeAbilities] = useState<{ [name in string]: string }>({});
 
   const cache = setupCache({
     maxAge: 15 * 60 * 1000,
@@ -37,20 +37,47 @@ export const useApp: useAppTypes = () => {
       if (typeof pokeList.data.results === "undefined") throw new Error("データに異常が見つかりました(No.1)");
 
       const resultPokeData = await Promise.allSettled(
-        pokeList.data.results.map<Promise<PokeDataType>>(async (poke) => {
-          const { abilities, height, species, sprites, types, weight } = (await api.get<PokeDataDetailType>(poke.url))
-            .data;
-          const { id, names } = (await api.get<PokeDataSpeciesType>(species.url)).data;
-          const name: string = names[0].name;
+        pokeList.data.results.map<Promise<PokeData>>(async (poke) => {
+          const { abilities, height, species, sprites, types, weight } = (await api.get<PokeDetail>(poke.url)).data;
+          const pokeSpecies = (await api.get<PokeSpecies>(species.url)).data;
+          const findJaHrkt: (name: {
+            language: {
+              name: string;
+            };
+          }) => boolean = (name) => name.language.name === "ja-Hrkt";
+          const jpName = pokeSpecies.names[pokeSpecies.names.findIndex(findJaHrkt)].name;
+          // const jpTypesPSR = await Promise.allSettled(
+          // types.map(async (type) => {
+          // const pokeType = (await api.get<PokeType>(type.type.url)).data;
+          // type.type.name = pokeType.names[pokeType.names.findIndex(findJaHrkt)].name;
+          // item.type.name = pokeTypes[item.type.name];
+          // return item;
+          // return type;
+          // })
+          // );
+          // const jpTypes = jpTypesPSR.flatMap((element) =>
+          //   element.status === "fulfilled" && element
+          // );
           const jpTypes = types.map((item) => {
             item.type.name = pokeTypes[item.type.name];
             return item;
           });
+
           const jpAbilities = abilities.map((item) => {
             item.ability.name = pokeAbilities[item.ability.name];
             return item;
           });
-          return { abilities: jpAbilities, height, name, species, sprites, types: jpTypes, weight, id, names };
+          return {
+            abilities: jpAbilities,
+            height,
+            name: jpName,
+            species,
+            sprites,
+            types: jpTypes,
+            weight,
+            id: pokeSpecies.id,
+            names: pokeSpecies.names,
+          };
         })
       );
       setPokeDatas(resultPokeData);
@@ -64,7 +91,7 @@ export const useApp: useAppTypes = () => {
     }
   };
 
-  // 属性データを非同期取得関数
+  // 属性データの非同期取得関数
   const getPokeTypes: () => Promise<void> = async () => {
     const result = await api.get<{ results: Array<{ url: string }> }>(initPokeTypesURI);
     const resultPokeTyes = await Promise.allSettled(
@@ -74,7 +101,7 @@ export const useApp: useAppTypes = () => {
     );
     resultPokeTyes.forEach((result) => {
       if (result.status === "fulfilled") {
-        setpokeTypes((prev) => {
+        setPokeTypes((prev) => {
           prev[result.value.data.name] = result.value.data.names[0].name;
           return prev;
         });
@@ -92,7 +119,7 @@ export const useApp: useAppTypes = () => {
     );
     resultPokeAbilities.forEach((result) => {
       if (result.status === "fulfilled") {
-        setpokeAbilities((prev) => {
+        setPokeAbilities((prev) => {
           prev[result.value.data.name] = result.value.data.names[0].name;
           return prev;
         });
@@ -101,7 +128,11 @@ export const useApp: useAppTypes = () => {
   };
 
   useEffect(() => {
-    Promise.allSettled([getPokeTypes(), getPokeAbilities()])
+    Promise.allSettled([
+      // getPokeSpecies(),
+      getPokeTypes(),
+      getPokeAbilities(),
+    ])
       .then(async () => {
         return await pokemonGet(initPokeListURI);
       })
