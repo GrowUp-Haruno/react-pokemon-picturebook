@@ -15,13 +15,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { FC } from "react";
-import { PokeDataType } from "../App/App.model";
+import { PokeData } from "../App/App.model";
 
 import { Card } from "../Card/Card";
 import { pokecardsProps } from "./PokeCards.style";
 
 export const PokeCards: FC<{
-  pokeDatas: Array<PromiseSettledResult<PokeDataType>>;
+  pokeDatas: Array<PromiseSettledResult<PokeData>>;
   isLoading: boolean;
 }> = ({ pokeDatas, isLoading }) => {
   // console.log(pokeDatas);
@@ -37,7 +37,7 @@ export const PokeCards: FC<{
             pokeData.status === "fulfilled" ? (
               <Card key={pokeData.value.name}>
                 {/* 全国図鑑番号 */}
-                <Text alignItems='start'>No.{pokeData.value.id}</Text>
+                <Text alignItems="start">No.{pokeData.value.id}</Text>
                 {/* 画像 */}
                 <Image src={pokeData.value.sprites.front_default} alt={pokeData.value.name} />
                 {/* 名前 */}
@@ -67,7 +67,7 @@ export const PokeCards: FC<{
                       </Tr>
                       {pokeData.value.abilities.map((ability, index) => (
                         <Tr key={index}>
-                          <Td>{index === 1 ? "隠れ" : ""}特性</Td>
+                          <Td>{ability.is_hidden ? "隠れ" : ""}特性</Td>
                           <Td isNumeric>{ability.ability.name}</Td>
                         </Tr>
                       ))}

@@ -4,7 +4,7 @@ export type PokeDetail = {
   types: Array<{ type: { name: string; url: string } }>;
   weight: number;
   height: number;
-  abilities: Array<{ ability: { name: string } }>;
+  abilities: Array<{ ability: { name: string }; is_hidden: boolean }>;
   species: { url: string };
 };
 
