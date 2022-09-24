@@ -46,18 +46,6 @@ export const useApp: useAppTypes = () => {
             };
           }) => boolean = (name) => name.language.name === "ja-Hrkt";
           const jpName = pokeSpecies.names[pokeSpecies.names.findIndex(findJaHrkt)].name;
-          // const jpTypesPSR = await Promise.allSettled(
-          // types.map(async (type) => {
-          // const pokeType = (await api.get<PokeType>(type.type.url)).data;
-          // type.type.name = pokeType.names[pokeType.names.findIndex(findJaHrkt)].name;
-          // item.type.name = pokeTypes[item.type.name];
-          // return item;
-          // return type;
-          // })
-          // );
-          // const jpTypes = jpTypesPSR.flatMap((element) =>
-          //   element.status === "fulfilled" && element
-          // );
           const jpTypes = types.map((item) => {
             item.type.name = pokeTypes[item.type.name];
             return item;
