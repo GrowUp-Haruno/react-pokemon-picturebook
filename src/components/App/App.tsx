@@ -1,5 +1,6 @@
 import { VStack } from "@chakra-ui/react";
 import { FC } from "react";
+import { Footer } from "../Footer/Footer";
 import { Navbar } from "../Navbar/Navbar";
 import { Pagenation } from "../Pagenation/Pagenation";
 import { PokeCards } from "../PokeCards/PokeCards";
@@ -12,6 +13,7 @@ export const App: FC = () => {
       <Navbar />
       <PokeCards pokeDatas={pokeDatas} isLoading={isLoading} />
       <Pagenation pokemonGet={pokemonGet} isLoading={isLoading} pokeCount={pokeCount} />
+      <Footer isLoading={isLoading} />
     </VStack>
   );
 };
