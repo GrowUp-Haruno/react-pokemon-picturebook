@@ -15,44 +15,31 @@ export const Pagenation: FC<{
     handleChangeSelect,
     createPagenation,
   } = usePagenation(pokemonGet, pokeCount);
+  if (isLoading) return <></>;
   return (
-    <>
-      {isLoading ? (
-        <></>
-      ) : (
-        <VStack py={8} spacing={4} w="sm">
-          <HStack>
-            {pagePosition <= 1 ? <></> : <Button onClick={handlePrevPage}>Back</Button>}
-            {createPagenation().map(
-              ({
-                jumpNumber,
-                props,
-              }) => (
-                <Button
-                  key={jumpNumber}
-                  {...props}
-                >
-                  {jumpNumber}
-                </Button>
-              )
-            )}
-            {pagePosition >= pageTotal ? <></> : <Button onClick={handleNextPage}>Next</Button>}
-          </HStack>
-          <FormControl>
-            <FormLabel>表示件数</FormLabel>
-            <Select onChange={handleChangeSelect} defaultValue={uriLimit}>
-              {[...Array(initLimitquantity)].map((_, i) => {
-                const value = initLimit * (i + 1);
-                return (
-                  <option value={value} key={i}>
-                    {value}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </VStack>
-      )}
-    </>
+    <VStack py={8} spacing={4} w="sm">
+      <HStack>
+        {pagePosition <= 1 ? <></> : <Button onClick={handlePrevPage}>Back</Button>}
+        {createPagenation().map(({ jumpNumber, props }) => (
+          <Button key={jumpNumber} {...props}>
+            {jumpNumber}
+          </Button>
+        ))}
+        {pagePosition >= pageTotal ? <></> : <Button onClick={handleNextPage}>Next</Button>}
+      </HStack>
+      <FormControl>
+        <FormLabel>表示件数</FormLabel>
+        <Select onChange={handleChangeSelect} defaultValue={uriLimit}>
+          {[...Array(initLimitquantity)].map((_, i) => {
+            const value = initLimit * (i + 1);
+            return (
+              <option value={value} key={i}>
+                {value}
+              </option>
+            );
+          })}
+        </Select>
+      </FormControl>
+    </VStack>
   );
 };
