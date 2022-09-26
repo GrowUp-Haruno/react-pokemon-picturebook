@@ -18,7 +18,7 @@ import { FC } from "react";
 import { PokeData } from "../App/App.model";
 
 import { Card } from "../Card/Card";
-import { pokecardsProps } from "./PokeCards.style";
+import { pokecardsProps, typeColors } from "./PokeCards.style";
 
 export const PokeCards: FC<{
   pokeDatas: Array<PromiseSettledResult<PokeData>>;
@@ -47,7 +47,12 @@ export const PokeCards: FC<{
                 {/* 属性 */}
                 <HStack spacing={4}>
                   {pokeData.value.types.map((type, i) => (
-                    <Tag key={type.type.name} size="md">
+                    <Tag
+                      key={type.type.name}
+                      size="md"
+                      bgColor={typeColors[type.type.name].bgColor}
+                      color={typeColors[type.type.name].color}
+                    >
                       {type.type.name}
                     </Tag>
                   ))}
