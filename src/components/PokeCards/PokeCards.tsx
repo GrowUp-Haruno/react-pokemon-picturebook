@@ -45,7 +45,7 @@ export const PokeCards: FC<{
                 {pokeData.value.types.map((type) => (
                   <Tag
                     key={type.type.name}
-                    size="md"
+                    size={["sm", "md"]}
                     bgColor={typeColors[type.type.name].bgColor}
                     color={typeColors[type.type.name].color}
                   >
