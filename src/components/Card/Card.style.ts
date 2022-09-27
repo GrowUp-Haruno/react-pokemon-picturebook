@@ -8,6 +8,6 @@ export const cardProps: StackProps = {
   borderRadius: "lg",
   backgroundColor: "orange.50",
   spacing: 2,
-  padding: 2,
+  padding: 4,
   w: "240px",
 };

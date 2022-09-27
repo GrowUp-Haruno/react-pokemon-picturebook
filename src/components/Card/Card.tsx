@@ -1,9 +1,14 @@
-import { VStack } from "@chakra-ui/react";
+import { StackProps, VStack } from "@chakra-ui/react";
 import { FC, ReactNode } from "react";
 import { cardProps } from "./Card.style";
 
 export const Card: FC<{
   children: ReactNode;
-}> = ({ children }) => {
-  return <VStack {...cardProps}>{children}</VStack>;
+  onClick: StackProps["onClick"];
+}> = ({ children, onClick }) => {
+  return (
+    <VStack {...cardProps} onClick={onClick}>
+      {children}
+    </VStack>
+  );
 };
