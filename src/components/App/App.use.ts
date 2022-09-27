@@ -60,7 +60,6 @@ export const useApp: useAppTypes = () => {
             item.version.name = pokeVersions[item.version.name];
             return item;
           });
-          console.log(jpFlavorText);
           return {
             abilities: jpAbilities,
             height,
@@ -71,6 +70,7 @@ export const useApp: useAppTypes = () => {
             weight,
             id: pokeSpecies.id,
             names: pokeSpecies.names,
+            flavorText: jpFlavorText,
           };
         })
       );

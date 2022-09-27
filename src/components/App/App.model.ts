@@ -24,4 +24,9 @@ export type PokeType = {
 
 export type PokeData = PokeDetail & {
   id: number;
+  flavorText: Array<{
+    flavor_text: string;
+    language: { name: string };
+    version: { name: string };
+  }>;
 };
