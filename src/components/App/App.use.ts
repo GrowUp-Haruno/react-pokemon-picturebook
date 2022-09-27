@@ -56,6 +56,12 @@ export const useApp: useAppTypes = () => {
             return item;
           });
           const findeJpFlavorText = pokeSpecies.flavor_text_entries.filter(findJaHrkt);
+          // バージョンの並び順を整える
+          findeJpFlavorText.sort((a, b) => {
+            const va = parseInt(a.version.url.substring(34, a.version.url.length - 1), 10);
+            const vb = parseInt(b.version.url.substring(34, b.version.url.length - 1), 10);
+            return va - vb;
+          });
           const jpFlavorText = findeJpFlavorText.map((item) => {
             item.version.name = pokeVersions[item.version.name];
             return item;

@@ -15,7 +15,7 @@ export type PokeSpecies = {
   flavor_text_entries: Array<{
     flavor_text: string;
     language: { name: string };
-    version: { name: string };
+    version: { name: string; url: string };
   }>;
 };
 export type PokeType = {
