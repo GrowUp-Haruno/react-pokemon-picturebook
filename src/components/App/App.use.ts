@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { setupCache } from "axios-cache-adapter";
 import { useEffect, useState } from "react";
-import { initPokeAbilityURI, initPokeListURI, initPokeTypesURI } from "../../setting";
+import { initPokeAbilityURI, initPokeListURI, initPokeTypesURI, initPokeVersionURI } from "../../setting";
 import { PokeDetail, PokeSpecies, PokeData } from "./App.model";
 
 type useAppTypes = () => {
@@ -17,6 +17,7 @@ export const useApp: useAppTypes = () => {
   const [pokeCount, setPokeCount] = useState(0);
   const [pokeTypes, setPokeTypes] = useState<{ [name in string]: string }>({});
   const [pokeAbilities, setPokeAbilities] = useState<{ [name in string]: string }>({});
+  const [pokeVersions, setPokeVersions] = useState<{ [name in string]: string }>({});
 
   const cache = setupCache({
     maxAge: 15 * 60 * 1000,
@@ -50,11 +51,16 @@ export const useApp: useAppTypes = () => {
             item.type.name = pokeTypes[item.type.name];
             return item;
           });
-
           const jpAbilities = abilities.map((item) => {
             item.ability.name = pokeAbilities[item.ability.name];
             return item;
           });
+          const findeJpFlavorText = pokeSpecies.flavor_text_entries.filter(findJaHrkt);
+          const jpFlavorText = findeJpFlavorText.map((item) => {
+            item.version.name = pokeVersions[item.version.name];
+            return item;
+          });
+          console.log(jpFlavorText);
           return {
             abilities: jpAbilities,
             height,
@@ -115,12 +121,26 @@ export const useApp: useAppTypes = () => {
     });
   };
 
+  // バージョンデータの非同期取得関数
+  const getPokeVersions: () => Promise<void> = async () => {
+    const result = await api.get<{ results: Array<{ url: string }> }>(initPokeVersionURI);
+    const resultPokeVersions = await Promise.allSettled(
+      result.data.results.map(
+        async (result) => await api.get<{ name: string; names: Array<{ name: string }> }>(result.url)
+      )
+    );
+    resultPokeVersions.forEach((result) => {
+      if (result.status === "fulfilled") {
+        setPokeVersions((prev) => {
+          prev[result.value.data.name] = result.value.data.names[0].name;
+          return prev;
+        });
+      }
+    });
+  };
+
   useEffect(() => {
-    Promise.allSettled([
-      // getPokeSpecies(),
-      getPokeTypes(),
-      getPokeAbilities(),
-    ])
+    Promise.allSettled([getPokeTypes(), getPokeAbilities(), getPokeVersions()])
       .then(async () => {
         return await pokemonGet(initPokeListURI);
       })
