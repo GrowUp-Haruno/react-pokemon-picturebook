@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { setupCache } from "axios-cache-adapter";
 import { useEffect, useState } from "react";
 import { initPokeAbilityURI, initPokeListURI, initPokeTypesURI, initPokeVersionURI } from "../../setting";
 import { PokeDetail, PokeSpecies, PokeData } from "./App.model";
@@ -19,12 +18,7 @@ export const useApp: useAppTypes = () => {
   const [pokeAbilities, setPokeAbilities] = useState<{ [name in string]: string }>({});
   const [pokeVersions, setPokeVersions] = useState<{ [name in string]: string }>({});
 
-  const cache = setupCache({
-    maxAge: 15 * 60 * 1000,
-  });
-  const api = axios.create({
-    adapter: cache.adapter,
-  });
+  const api = axios.create();
 
   const pokemonGet: (pokemonListURI: string) => Promise<number | undefined | null> = async (pokemonListURI) => {
     try {
