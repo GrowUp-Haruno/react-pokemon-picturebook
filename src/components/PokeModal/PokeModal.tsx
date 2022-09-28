@@ -46,7 +46,7 @@ export const PokeModal: FC<{
                 {/* 画像 */}
                 <Image src={modalPokeData.sprites.front_default} alt={modalPokeData.name} h="96px" />
                 {/* 名前 */}
-                <Heading as="h2" size="lg">
+                <Heading as="h2" size={["md", "lg"]}>
                   {modalPokeData.name}
                 </Heading>
                 {/* 属性 */}
