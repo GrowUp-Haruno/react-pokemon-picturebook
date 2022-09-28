@@ -1500,14 +1500,6 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios-cache-adapter@^2.7.3:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/axios-cache-adapter/-/axios-cache-adapter-2.7.3.tgz#0d1eefa0f25b88f42a95c7528d7345bde688181d"
-  integrity sha512-A+ZKJ9lhpjthOEp4Z3QR/a9xC4du1ALaAsejgRGrH9ef6kSDxdFrhRpulqsh9khsEnwXxGfgpUuDp1YXMNMEiQ==
-  dependencies:
-    cache-control-esm "1.0.0"
-    md5 "^2.2.1"
-
 axios@^0.27.2:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
@@ -1562,11 +1554,6 @@ builtins@^5.0.1:
   dependencies:
     semver "^7.0.0"
 
-cache-control-esm@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/cache-control-esm/-/cache-control-esm-1.0.0.tgz#417647ecf1837a5e74155f55d5a4ae32a84e2581"
-  integrity sha512-Fa3UV4+eIk4EOih8FTV6EEsVKO0W5XWtNs6FC3InTfVz+EjurjPfDXY5wZDo/lxjDxg5RjNcurLyxEJBcEUx9g==
-
 call-bind@^1.0.0, call-bind@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/call-bind/-/call-bind-1.0.2.tgz#b1d4e89e688119c3c9a903ad30abb2f6a919be3c"
@@ -1601,11 +1588,6 @@ chalk@^4.0.0:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
-
-charenc@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
-  integrity sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -1681,11 +1663,6 @@ cross-spawn@^7.0.2:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
-
-crypt@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
-  integrity sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==
 
 css-box-model@1.2.1:
   version "1.2.1"
@@ -2549,11 +2526,6 @@ is-boolean-object@^1.1.0:
     call-bind "^1.0.2"
     has-tostringtag "^1.0.0"
 
-is-buffer@~1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
-  integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
-
 is-callable@^1.1.4, is-callable@^1.2.4:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/is-callable/-/is-callable-1.2.6.tgz#fd6170b0b8c7e2cc73de342ef8284a2202023c44"
@@ -2750,15 +2722,6 @@ magic-string@^0.26.2:
   integrity sha512-u1Po0NDyFcwdg2nzHT88wSK0+Rih0N1M+Ph1Sp08k8yvFFU3KR72wryS7e1qMPJypt99WB7fIFVCA92mQrMjrg==
   dependencies:
     sourcemap-codec "^1.4.8"
-
-md5@^2.2.1:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/md5/-/md5-2.3.0.tgz#c3da9a6aae3a30b46b7b0c349b87b110dc3bda4f"
-  integrity sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==
-  dependencies:
-    charenc "0.0.2"
-    crypt "0.0.2"
-    is-buffer "~1.1.6"
 
 merge2@^1.3.0, merge2@^1.4.1:
   version "1.4.1"
