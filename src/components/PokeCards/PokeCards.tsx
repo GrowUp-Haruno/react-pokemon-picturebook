@@ -35,7 +35,7 @@ export const PokeCards: FC<{
               {/* 全国図鑑番号 */}
               <Text alignItems="start">No.{pokeData.value.id}</Text>
               {/* 画像 */}
-              <Image src={pokeData.value.sprites.front_default} alt={pokeData.value.name} />
+              <Image src={pokeData.value.sprites.front_default} alt={pokeData.value.name} h="96px"/>
               {/* 名前 */}
               <Heading as="h2" size="lg">
                 {pokeData.value.name}
